@@ -1,7 +1,7 @@
 #include "item.h"
-/*
-TItem::TItem(QObject *parent) : QObject{parent}
+
+TItem::TItem(QString label, QObject *parent) : QObject{parent}, _Label(label)
 {
 
 }
-*/
+

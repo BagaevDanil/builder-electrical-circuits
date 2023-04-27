@@ -11,12 +11,16 @@ CONFIG += c++17
 SOURCES += \
     chainitem.cpp \
     item.cpp \
+    key.cpp \
+    lamp.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     chainitem.h \
     item.h \
+    key.h \
+    lamp.h \
     mainwindow.h
 
 FORMS += \

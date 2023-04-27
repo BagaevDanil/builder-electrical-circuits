@@ -4,6 +4,10 @@
 #include <QString>
 #include <QVector>
 #include <QDebug>
+#include "item.h"
+#include "lamp.h"
+#include "key.h"
+#include <QGraphicsScene>
 
 class TChainItem
 {
@@ -14,12 +18,14 @@ public:
     };
 
 public:
-    TChainItem(QString chainStr, int ind);
+    TChainItem();
     TChainItem(int num);
     QString ToString();
-
-private:
-    void MakeChainFromStr(QString chainStr, int ind);
+    QString ToStringReverse();
+    void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* parent = nullptr);
+    TChainItem* GetTail();
+    int GetW();
+    void AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up);
 
 public: // private
     QVector<TChainItem*> _Child;
@@ -27,7 +33,7 @@ public: // private
     TChainItem* _Next;
     int _W;
     int _H;
-    // TItem* _Item;
+    TItem* _Item;
     bool _IsChain;
     ETypeItem _Type;
     QString _Num;

@@ -1,46 +1,40 @@
 #include "chainitem.h"
 
-void TChainItem::MakeChainFromStr(QString chainStr, int ind)
+TChainItem::TChainItem(int num)
 {
 
 }
 
-TChainItem::TChainItem(int num)
-{
-    /*_IsChain = true;
-    int ind = 1;
-    while (ind < chainStr.size()) {
-        if (chainStr[ind] == 'K' || chainStr[ind] == 'L') {
-            ind++;
-            QString num;
-            while (chainStr[ind] != ',') {
-                num += chainStr[ind];
-                ind++;
-            }
-            ind++;
-            _Child.push_back(new TChainItem(num.toInt()));
-            _W += 1;
+void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
+    int INDENT = 30;
+    int _W = GetW();
+
+    if (!_IsChain) {
+        scene->addLine(left - INDENT/2, up, left + INDENT*_W - INDENT/2, up);
+        _Item->setPos(left, up);
+        qDebug() << _Num << left << up;
+        scene->addItem(_Item);
+        if (_Next) {
+            _Next->AddToScene(scene, left + INDENT, right, bottom, up);
         }
-        if (chainStr[ind] == '(') {
-            ind++;
-            int balance = 1;
-            QString chain;
-            while (balance != 0) {
-                chain += chainStr[ind];
-                if (chainStr[ind] == '(') {
-                    balance++;
-                }
-                if (chainStr[ind] == ')') {
-                    balance--;
-                }
-                ind++;
+    }
+    else {
+        int h = 0;
+        scene->addLine(left - INDENT/2, up, left + INDENT/2, up);
+        for (int i = 0; i < _Child.size(); i++) {
+            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(_W), up - INDENT*h);
+            _Child[i]->AddToScene(scene, left + INDENT, right, bottom, up - INDENT*(h));
+            if (i != _Child.size() - 1) {
+                h += _Child[i]->_H;
             }
-            auto* newChild = new TChainItem(chain);
-            _H = std::max(_H, newChild->_H);
-            _W += newChild->_W;
-            _Child.push_back(newChild);
         }
-    }*/
+        scene->addLine(left + INDENT/2, up - INDENT*h, left + INDENT/2, up);
+        scene->addLine(left + INDENT*(_W), up - INDENT*h, left + INDENT*(_W), up);
+        // scene->addLine(left + INDENT*(_W), up, left + INDENT*(_W), up);
+        if (_Next) {
+            _Next->AddToScene(scene, left + INDENT*(_W), right, bottom, up);
+        }
+    }
 }
 
 QString TChainItem::ToString()
@@ -68,31 +62,104 @@ QString TChainItem::ToString()
     return ans;
 }
 
-TChainItem::TChainItem(QString chainStr, int ind = 0) : _Next(nullptr) // K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14
+QString TChainItem::ToStringReverse()
 {
+    QString ans = "";
+    if (!_IsChain) {
+        ans += _Num;
+        if (_Prev) {
+            ans += "->" + _Prev->ToStringReverse();
+        }
+    }
+    else {
+        ans += "{";
+        for (int i = 0; i < _Child.size(); i++) {
+
+            ans += _Child[i]->GetTail()->ToStringReverse();
+            if (i < _Child.size() - 1) {
+                 ans += ", ";
+            }
+        }
+        ans += "}";
+        if (_Prev) {
+            ans += "->" + _Prev->ToStringReverse();
+        }
+    }
+    return ans;
+}
+
+TChainItem* TChainItem::GetTail()
+{
+    TChainItem* tail = this;
+    while (tail->_Next) {
+        tail = tail->_Next;
+    }
+    return tail;
+}
+
+int TChainItem::GetW()
+{
+    int ans = 0;
+
+    if (!_IsChain) {
+        ans += 1;
+        if (_Next) {
+            ans += _Next->GetW();
+        }
+    }
+    else {
+        ans += 2;
+        int mx = 0;
+        for (int i = 0; i < _Child.size(); i++) {
+            mx = std::max(mx, _Child[i]->GetW());
+        }
+        ans += mx;
+        if (_Next) {
+            ans += _Next->GetW();
+        }
+    }
+    return ans;
+}
+
+void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent) // K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14
+{
+    _Prev = parent;
     if (chainStr[ind] == 'K' || chainStr[ind] == 'L') {
-        // ind++;
-        QString num;
+        QString label;
         while (ind < chainStr.size() && chainStr[ind] != '-') {
             if (chainStr[ind] == ')') {
                 ind++;
                 continue;
             }
-            num += chainStr[ind];
+            label += chainStr[ind];
             ind++;
         }
         ind++;
-        _Num = num;//.toInt(/*ok*/);
-        // qDebug() << num;
+
+        if (label[0] == 'K') {
+            _Item = new TKey(label);
+        }
+        else if (label[0] == 'L') {
+            _Item = new TLamp(label);
+        }
+
+        _Num = label;
         _IsChain = false;
+        _H = 1;
+        _W = 1;
         if (ind < chainStr.size()) {
-            _Next = new TChainItem(chainStr, ind);
+            _Next = new TChainItem();
+            _Next->MakeChainFromStr(chainStr, ind, this);
+            _H = std::max(_H, _Next->_H);
+            _W += _Next->_W;
         }
     }
     else if (chainStr[ind] == '(') {
         ind++;
         int balance = 1;
         QString chain;
+        _H = 0;
+        _W = 0;
         while (balance != 0) {
             if (chainStr[ind] == '(') {
                 balance++;
@@ -104,7 +171,11 @@ TChainItem::TChainItem(QString chainStr, int ind = 0) : _Next(nullptr) // K12-K3
             }
             else if (balance == 1 && chainStr[ind] == ',') {
                 //qDebug() << chain;
-                _Child.push_back(new TChainItem(chain));
+                auto* newChild = new TChainItem();
+                newChild->MakeChainFromStr(chain);
+                _H += newChild->_H;
+                _W = std::max(_W, newChild->_W);
+                _Child.push_back(newChild);
                 chain = "";
             }
             else {
@@ -114,12 +185,24 @@ TChainItem::TChainItem(QString chainStr, int ind = 0) : _Next(nullptr) // K12-K3
         }
 
         //qDebug() << chain;
-        _Child.push_back(new TChainItem(chain));
+        auto* newChild = new TChainItem();
+        newChild->MakeChainFromStr(chain);
+        _H += newChild->_H;
+        _W = std::max(_W, newChild->_W) + 2;
+        _Child.push_back(newChild);
 
         ind++;
         _IsChain = true;
         if (ind < chainStr.size()) {
-            _Next = new TChainItem(chainStr, ind);
+            _Next = new TChainItem();
+            _Next->MakeChainFromStr(chainStr, ind, this);
+            _H = std::max(_H, _Next->_H);
+            _W += _Next->_W;
         }
     }
 }
+
+
+
+TChainItem::TChainItem()
+    : _Next(nullptr) {}
