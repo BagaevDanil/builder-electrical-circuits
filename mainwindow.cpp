@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     chain->MakeChainFromStr(str);
     qDebug() << chain->ToString();
     qDebug() << chain->GetW();
+    qDebug() << chain->GetTail()->GetWR();
 
     //TChainItem* tail = chain->GetTail();
     //qDebug() << tail->ToStringReverse();
@@ -30,7 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
     _Scene->setSceneRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     chain->AddToScene(_Scene, 30, SCREEN_WIDTH - 50, 50, SCREEN_HEIGHT - 50);
-    // chain->AddToSceneR(_Scene, 0, chain->GetLen()*30, 50, SCREEN_HEIGHT - 50);
+    //chain->GetTail()->AddToSceneR(_Scene, 0, 600, 50, SCREEN_HEIGHT - 50);
+
+    // chain = chain->_Next->_Next->_Child[3]->_Child[1];
+    // qDebug() << chain->ToString();
+    // qDebug() << chain->GetLen();
 }
 
 MainWindow::~MainWindow()
