@@ -12,8 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     QString str1 = "K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14";
     QString str2 = "K12-K3-(L1,L4,(K2-L11,L9),(K7-K8,L1,L4,(K2-L11,L9)))-(L11,L7)-L14";
-    QString str = "K12-K3-(L12345,L4,(K2-L11,L9),(K7-K8,(K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14),L4,(K2-L11,L9)))-(L1111,L7)-L14";
-    QString str4 = "K12-K3-(L1,L4,(K2-L11,L9),(K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-K89-(L11,L7)-L14-K8))-K89-(L11,L7)-L14";
+    QString str = "K12-K3-(L12345,L4,(K123456-L123456,L123456),(K7-K8,(K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14),L4,(K2-L11,L9)))-(L1111,L7)-L14";
+    QString str4 = "K12-K3-(L1,L4,(K123456-L11,L123456),(K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-K89-(L11,L7)-L14-K8))-K89-(L11,L7)-L14";
     TChainItem* chain = new TChainItem();
     chain->MakeChainFromStr(str);
     qDebug() << chain->ToString();
@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     _Scene->setSceneRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     chain->AddToScene(_Scene, 30, SCREEN_WIDTH - 50, 50, SCREEN_HEIGHT - 50);
+    // chain->AddToSceneR(_Scene, 0, chain->GetLen()*30, 50, SCREEN_HEIGHT - 50);
 }
 
 MainWindow::~MainWindow()

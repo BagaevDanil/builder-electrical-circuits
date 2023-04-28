@@ -25,8 +25,10 @@ public:
     void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* parent = nullptr);
     TChainItem* GetTail();
     int GetW(int l = 0);
+    int GetW2(int l = 0);
     int GetLen();
     void AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up);
+    void AddToSceneR(QGraphicsScene* scene, int left, int right, int bottom, int up);
 
 public: // private
     QVector<TChainItem*> _Child;
