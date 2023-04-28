@@ -8,7 +8,6 @@ TChainItem::TChainItem(int num)
 //void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
 //    int INDENT = 30;
 //    int _W = GetW();
-
 //    if (!_IsChain) {
 //        scene->addLine(left - INDENT/2, up, left + INDENT*_W - INDENT/2, up);
 //        _Item->setPos(left, up);
@@ -68,29 +67,36 @@ TChainItem::TChainItem(int num)
 //    }
 //}
 
+
 void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
     int INDENT = 30;
-    int _W = GetW();
+    // int _W = GetW();
     if (!_IsChain) {
         _Item->setPos(left, up);
         scene->addLine(left, up, left + INDENT, up);
         scene->addItem(_Item);
         if (_Next) {
-            _Next->AddToScene(scene, left + INDENT, right, bottom, up);
+            _Next->AddToScene(scene, 0 + INDENT*_Next->_W, right, bottom, up);
         }
     }
     else {
         int h = 0;
         for (int i = 0; i < _Child.size(); i++) {
             scene->addLine(left, up, left + INDENT, up - INDENT*h);
-            _Child[i]->AddToScene(scene, left + INDENT, right, bottom, up - INDENT*(h));
+            _Child[i]->AddToScene(scene, 0 + INDENT*_Child[i]->_W, right, bottom, up - INDENT*(h));
             if (i != _Child.size() - 1) {
                 h += _Child[i]->_H;
             }
         }
 
         if (_Next) {
-            _Next->AddToScene(scene, left + INDENT*(_W), right, bottom, up);
+            if (_Next->_IsChain && _Next->_Child[0]->_Num == "L1111") {
+                qDebug() << "L111" << _W;
+                _Next->AddToScene(scene, 0 + INDENT*_Next->_W, right, bottom, up);
+            }
+            else {
+                _Next->AddToScene(scene, 0 + INDENT*_Next->_W, right, bottom, up);
+            }
         }
     }
 }
@@ -155,37 +161,88 @@ TChainItem* TChainItem::GetTail()
     return tail;
 }
 
-int TChainItem::GetW()
-{
-    int ans = 0;
+//int TChainItem::GetW()
+//{
+//    int ans = 0;
+//    int qq = 0;
 
+//    if (!_IsChain) {
+//        ans += 1;
+//        if (_Next) {
+//            ans += _Next->GetW();
+//        }
+//    }
+//    else {
+//        ans += 1;
+//        int mx = 0;
+//        for (int i = 0; i < _Child.size(); i++) {
+//            mx = std::max(mx, _Child[i]->GetW());
+//            if (_Child[0]->_Num == "L12345") {
+//                qDebug() << _Child[i]->_W;
+//            }
+//        }
+
+//        ans += mx;
+//        if (_Next) {
+//            // qq += _Next->GetW();
+//        }
+
+//        for (int i = 0; i < _Child.size(); i++) {
+//            // qDebug() << ans << _Child[i]->_W;
+//            // _Child[i]->_W = mx;
+//        }
+//    }
+//    _W = ans;
+//    // qDebug() << ans;
+//    return ans + qq;
+//}
+
+int TChainItem::GetLen() {
+    int ans = 0;
     if (!_IsChain) {
         ans += 1;
         if (_Next) {
-            ans += _Next->GetW();
+            ans += _Next->GetLen();
         }
     }
     else {
-        ans += 0;
+        ans += 1;
         int mx = 0;
         for (int i = 0; i < _Child.size(); i++) {
-            mx = std::max(mx, _Child[i]->GetW());
+           mx = std::max(mx, _Child[i]->GetLen());
         }
-
         ans += mx;
         if (_Next) {
-            ans += _Next->GetW();
-        }
-
-        for (int i = 0; i < _Child.size(); i++) {
-            //qDebug() << ans << _Child[i]->_W;
-            // _Child[i]->_W = mx;
-            //qDebug() << ans << _Child[i]->_W;
+            ans += _Next->GetLen();
         }
     }
-    _W = ans;
-    // qDebug() << ans;
     return ans;
+}
+
+int TChainItem::GetW(int l)
+{
+    if (!_IsChain) {
+        _W = l + 1;
+        if (_Next) {
+            _Next->GetW(_W);
+        }
+    }
+    else {
+        _W = l + 1;
+        int mx = 0;
+        for (int i = 0; i < _Child.size(); i++) {
+           _Child[i]->GetW(_W);
+           mx = std::max(mx, _Child[i]->GetLen());
+           if (_Child[0]->_Num == "L12345") {
+               qDebug() << _Child[i]->_W;
+           }
+        }
+        // _W = mx;
+        if (_Next) {
+            _Next->GetW(_W + mx);
+        }
+    }
+    return _W;
 }
 
 void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent) // K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14

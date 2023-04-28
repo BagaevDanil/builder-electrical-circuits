@@ -24,7 +24,8 @@ public:
     QString ToStringReverse();
     void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* parent = nullptr);
     TChainItem* GetTail();
-    int GetW();
+    int GetW(int l = 0);
+    int GetLen();
     void AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up);
 
 public: // private
