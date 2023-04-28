@@ -2,8 +2,8 @@
 #include "ui_mainwindow.h"
 #include "chainitem.h"
 
-int SCREEN_WIDTH = 2000;
-int SCREEN_HEIGHT = 2000;
+int SCREEN_WIDTH = 700;
+int SCREEN_HEIGHT = 500;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
