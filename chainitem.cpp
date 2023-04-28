@@ -5,14 +5,45 @@ TChainItem::TChainItem(int num)
 
 }
 
+//void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
+//    int INDENT = 30;
+//    int _W = GetW();
+
+//    if (!_IsChain) {
+//        scene->addLine(left - INDENT/2, up, left + INDENT*_W - INDENT/2, up);
+//        _Item->setPos(left, up);
+//        // qDebug() << _Num << left << up;
+//        scene->addItem(_Item);
+//        if (_Next) {
+//            _Next->AddToScene(scene, left + INDENT, right, bottom, up);
+//        }
+//    }
+//    else {
+//        int h = 0;
+//        scene->addLine(left - INDENT/2, up, left + INDENT/2, up);
+//        for (int i = 0; i < _Child.size(); i++) {
+//            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(_W-2), up - INDENT*h);
+//            _Child[i]->AddToScene(scene, left + INDENT, right, bottom, up - INDENT*(h));
+//            if (i != _Child.size() - 1) {
+//                h += _Child[i]->_H;
+//            }
+//        }
+//        scene->addLine(left + INDENT/2, up - INDENT*h, left + INDENT/2, up);
+//        scene->addLine(left + INDENT*(_W-2), up - INDENT*h, left + INDENT*(_W-2), up);
+//        // scene->addLine(left + INDENT*(_W), up, left + INDENT*(_W), up);
+//        if (_Next) {
+//            _Next->AddToScene(scene, left + INDENT*(_W-2), right, bottom, up);
+//        }
+//    }
+//}
+
 void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
     int INDENT = 30;
     int _W = GetW();
-
     if (!_IsChain) {
         scene->addLine(left - INDENT/2, up, left + INDENT*_W - INDENT/2, up);
         _Item->setPos(left, up);
-        qDebug() << _Num << left << up;
+        // qDebug() << _Num << left << up;
         scene->addItem(_Item);
         if (_Next) {
             _Next->AddToScene(scene, left + INDENT, right, bottom, up);
@@ -20,16 +51,16 @@ void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bott
     }
     else {
         int h = 0;
-        scene->addLine(left - INDENT/2, up, left + INDENT/2, up);
+        scene->addLine(left - INDENT/2, up, left + INDENT, up);
         for (int i = 0; i < _Child.size(); i++) {
-            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(_W), up - INDENT*h);
+            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(_W) + INDENT/2, up - INDENT*h);
             _Child[i]->AddToScene(scene, left + INDENT, right, bottom, up - INDENT*(h));
             if (i != _Child.size() - 1) {
                 h += _Child[i]->_H;
             }
         }
         scene->addLine(left + INDENT/2, up - INDENT*h, left + INDENT/2, up);
-        scene->addLine(left + INDENT*(_W), up - INDENT*h, left + INDENT*(_W), up);
+        scene->addLine(left + INDENT*(_W)+INDENT/2, up - INDENT*h, left + INDENT*(_W)+INDENT/2, up);
         // scene->addLine(left + INDENT*(_W), up, left + INDENT*(_W), up);
         if (_Next) {
             _Next->AddToScene(scene, left + INDENT*(_W), right, bottom, up);
@@ -108,16 +139,25 @@ int TChainItem::GetW()
         }
     }
     else {
-        ans += 2;
+        ans += 0;
         int mx = 0;
         for (int i = 0; i < _Child.size(); i++) {
             mx = std::max(mx, _Child[i]->GetW());
         }
+
         ans += mx;
         if (_Next) {
             ans += _Next->GetW();
         }
+
+        for (int i = 0; i < _Child.size(); i++) {
+            //qDebug() << ans << _Child[i]->_W;
+            // _Child[i]->_W = mx;
+            //qDebug() << ans << _Child[i]->_W;
+        }
     }
+    _W = ans;
+    // qDebug() << ans;
     return ans;
 }
 
