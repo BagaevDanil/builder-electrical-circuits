@@ -3,8 +3,6 @@
 int INDENT = 30;
 
 void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
-
-
     if (!_IsChain) {
         _Item->setPos(curW, curH);
         scene->addItem(_Item);
@@ -32,7 +30,7 @@ void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
         }
 
         if (_Next) {
-            scene->addLine(INDENT*(_Next->_W - 1), curH, INDENT*_Next->_W, curH);
+            scene->addLine(curW + (maxChildLen + 1)*INDENT, curH, curW + (maxChildLen + 2)*INDENT, curH);
             _Next->AddToScene(scene, curW + (maxChildLen + 2)*INDENT, curH);
         }
     }
@@ -145,9 +143,10 @@ int TChainItem::GetW(int l)
     return _W;
 }
 
-void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent) // K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14
+void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* prev, TChainItem* start) // K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14
 {
-    _Prev = parent;
+    _StartChain = start;
+    _Prev = prev;
     if (chainStr[ind] == 'K' || chainStr[ind] == 'L') {
         QString label;
         while (ind < chainStr.size() && chainStr[ind] != '-') {
@@ -162,7 +161,7 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
 
         if (label[0] == 'K') {
             _Item = new TKey(label);
-            connect(_Item,SIGNAL(UpdateKey()),this,SLOT(UpdateLightBulbsSlot()));
+            connect(_Item, SIGNAL(UpdateKey()), this, SLOT(UpdateLightBulbsSlot()));
         }
         else if (label[0] == 'L') {
             _Item = new TLamp(label);
@@ -174,7 +173,7 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
         _W = 1;
         if (ind < chainStr.size()) {
             _Next = new TChainItem();
-            _Next->MakeChainFromStr(chainStr, ind, this);
+            _Next->MakeChainFromStr(chainStr, ind, this, start);
             _H = std::max(_H, _Next->_H);
             _W += _Next->_W;
         }
@@ -197,7 +196,7 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
             else if (balance == 1 && chainStr[ind] == ',') {
                 //qDebug() << chain;
                 auto* newChild = new TChainItem();
-                newChild->MakeChainFromStr(chain);
+                newChild->MakeChainFromStr(chain, 0, nullptr, start);
                 _H += newChild->_H;
                 _W = std::max(_W, newChild->_W);
                 _Child.push_back(newChild);
@@ -211,7 +210,7 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
 
         //qDebug() << chain;
         auto* newChild = new TChainItem();
-        newChild->MakeChainFromStr(chain);
+        newChild->MakeChainFromStr(chain, 0, nullptr, start);
         _H += newChild->_H;
         _W = std::max(_W, newChild->_W) + 2;
         _Child.push_back(newChild);
@@ -220,7 +219,7 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
         _IsChain = true;
         if (ind < chainStr.size()) {
             _Next = new TChainItem();
-            _Next->MakeChainFromStr(chainStr, ind, this);
+            _Next->MakeChainFromStr(chainStr, ind, this, start);
             _H = std::max(_H, _Next->_H);
             _W += _Next->_W;
         }
@@ -229,7 +228,6 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
 
 bool TChainItem::UpdateLightBulbs(bool work)
 {
-
     if (!_IsChain) {
         if (_Item->_Type == TItem::ETypeItem::KEY && !_Item->_IsActive) {
             work = false;
@@ -246,7 +244,6 @@ bool TChainItem::UpdateLightBulbs(bool work)
         bool childWork = false;
         for (int i = 0; i < _Child.size(); i++) {
             bool ans = _Child[i]->UpdateLightBulbs(work);
-            if (_Child[0]->_Num == "K3333") qDebug() << ans;
             childWork = childWork || ans;
         }
         work = childWork;
@@ -260,7 +257,7 @@ bool TChainItem::UpdateLightBulbs(bool work)
 void TChainItem::UpdateLightBulbsSlot()
 {
     qDebug() << "UPDATE!";
-    UpdateLightBulbs();
+    _StartChain->UpdateLightBulbs();
 }
 
 TChainItem::TChainItem(QObject *parent)

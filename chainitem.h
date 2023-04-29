@@ -18,7 +18,7 @@ public:
     TChainItem(QObject *parent = nullptr);
     QString ToString();
     QString ToStringReverse();
-    void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* parent = nullptr);
+    void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* prev = nullptr, TChainItem* start = nullptr);
     TChainItem* GetTail();
     int GetW(int l = 0);
     int GetLen();
@@ -30,12 +30,16 @@ public: // private
     TChainItem* _Prev;
     TChainItem* _Next;
     TChainItem* _Head;
+    TChainItem* _StartChain;
     int _W;
     int _H;
     TItem* _Item;
     bool _IsChain;
     // ETypeItem _Type;
     QString _Num;
+
+signals:
+    void UpdateScene();
 
 public slots:
     void UpdateLightBulbsSlot();
