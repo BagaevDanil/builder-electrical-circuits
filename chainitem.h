@@ -15,15 +15,17 @@ class TChainItem : public QObject
     Q_OBJECT
 
 public:
-    TChainItem(QObject *parent = nullptr);
+    TChainItem(QString chainStr, QObject *parent = nullptr);
     QString ToString();
     QString ToStringReverse();
-    void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* prev = nullptr, TChainItem* start = nullptr);
+    void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* start = nullptr, TChainItem* prev = nullptr);
     TChainItem* GetTail();
-    int GetW(int l = 0);
     int GetLen();
     void AddToScene(QGraphicsScene* scene, int curW, int curH);
     bool UpdateLightBulbs(bool work = true);
+
+private:
+    TChainItem(QString chainStr, int ind, TChainItem* start = nullptr, TChainItem* prev = nullptr, QObject *parent = nullptr);
 
 public: // private
     QVector<TChainItem*> _Child;
@@ -36,13 +38,13 @@ public: // private
     TItem* _Item;
     bool _IsChain;
     // ETypeItem _Type;
-    QString _Num;
+    // QString _Num;
 
 signals:
     void UpdateScene();
 
 public slots:
-    void UpdateLightBulbsSlot();
+    void FullUpdateLightBulbsSlot();
 };
 
 #endif // TCHAINITEM_H

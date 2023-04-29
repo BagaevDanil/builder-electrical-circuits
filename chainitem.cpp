@@ -40,7 +40,7 @@ QString TChainItem::ToString()
 {
     QString ans = "";
     if (!_IsChain) {
-        ans += _Num;
+        ans += _Item->_Label;
         if (_Next) {
             ans += "->" + _Next->ToString();
         }
@@ -65,7 +65,7 @@ QString TChainItem::ToStringReverse()
 {
     QString ans = "";
     if (!_IsChain) {
-        ans += _Num;
+        ans += _Item->_Label;
         if (_Prev) {
             ans += "->" + _Prev->ToStringReverse();
         }
@@ -98,107 +98,71 @@ TChainItem* TChainItem::GetTail()
 
 
 int TChainItem::GetLen() {
-    int ans = 0;
+    int ans;
     if (!_IsChain) {
-        ans += 1;
-        if (_Next) {
-            ans += _Next->GetLen();
-        }
+        ans = 1;
     }
     else {
-        ans += 2;
+        ans = 2;
         int mx = 0;
         for (int i = 0; i < _Child.size(); i++) {
            mx = std::max(mx, _Child[i]->GetLen());
         }
         ans += mx;
-        if (_Next) {
-            ans += _Next->GetLen();
-        }
+    }
+
+    if (_Next) {
+        ans += _Next->GetLen();
     }
     return ans;
 }
 
-
-int TChainItem::GetW(int l)
-{
-    if (!_IsChain) {
-        _W = l + 1;
-        if (_Next) {
-            _Next->GetW(_W);
-        }
-    }
-    else {
-        _W = l + 1;
-        int mx = 0;
-        for (int i = 0; i < _Child.size(); i++) {
-           _Child[i]->GetW(_W);
-           mx = std::max(mx, _Child[i]->GetLen());
-        }
-
-        if (_Next) {
-            _Next->GetW(_W + mx + 1);
-        }
-    }
-    return _W;
-}
-
-void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* prev, TChainItem* start) // K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14
+void TChainItem::MakeChainFromStr(QString chainStr, int ind,  TChainItem* start, TChainItem* prev)
 {
     _StartChain = start;
     _Prev = prev;
+
     if (chainStr[ind] == 'K' || chainStr[ind] == 'L') {
+        _IsChain = false;
+        _H = 1;
+
         QString label;
         while (ind < chainStr.size() && chainStr[ind] != '-') {
-            if (chainStr[ind] == ')') {
-                ind++;
-                continue;
+            if (chainStr[ind] != ')') {
+                label += chainStr[ind];
             }
-            label += chainStr[ind];
             ind++;
         }
-        ind++;
 
         if (label[0] == 'K') {
             _Item = new TKey(label);
-            connect(_Item, SIGNAL(UpdateKey()), this, SLOT(UpdateLightBulbsSlot()));
+            connect(_Item, SIGNAL(UpdateKey()), this, SLOT(FullUpdateLightBulbsSlot()));
         }
         else if (label[0] == 'L') {
             _Item = new TLamp(label);
         }
-
-        _Num = label;
-        _IsChain = false;
-        _H = 1;
-        _W = 1;
-        if (ind < chainStr.size()) {
-            _Next = new TChainItem();
-            _Next->MakeChainFromStr(chainStr, ind, this, start);
-            _H = std::max(_H, _Next->_H);
-            _W += _Next->_W;
+        else {
+            // Error!
         }
     }
     else if (chainStr[ind] == '(') {
         ind++;
+        _H = 0;
+        _IsChain = true;
+
         int balance = 1;
         QString chain;
-        _H = 0;
-        _W = 0;
         while (balance != 0) {
             if (chainStr[ind] == '(') {
                 balance++;
-                chain += chainStr[ind];
             }
             else if (chainStr[ind] == ')') {
                 balance--;
-                chain += chainStr[ind];
             }
-            else if (balance == 1 && chainStr[ind] == ',') {
-                //qDebug() << chain;
-                auto* newChild = new TChainItem();
-                newChild->MakeChainFromStr(chain, 0, nullptr, start);
+
+            if (balance == 0 || (chainStr[ind] == ',' && balance == 1)) {
+                auto* newChild = new TChainItem(chain, 0, start);
                 _H += newChild->_H;
-                _W = std::max(_W, newChild->_W);
                 _Child.push_back(newChild);
                 chain = "";
             }
@@ -207,22 +171,12 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* prev, T
             }
             ind++;
         }
+    }
 
-        //qDebug() << chain;
-        auto* newChild = new TChainItem();
-        newChild->MakeChainFromStr(chain, 0, nullptr, start);
-        _H += newChild->_H;
-        _W = std::max(_W, newChild->_W) + 2;
-        _Child.push_back(newChild);
-
-        ind++;
-        _IsChain = true;
-        if (ind < chainStr.size()) {
-            _Next = new TChainItem();
-            _Next->MakeChainFromStr(chainStr, ind, this, start);
-            _H = std::max(_H, _Next->_H);
-            _W += _Next->_W;
-        }
+    ind++;
+    if (ind < chainStr.size()) {
+        _Next = new TChainItem(chainStr, ind, start, this);
+        _H = std::max(_H, _Next->_H);
     }
 }
 
@@ -235,10 +189,6 @@ bool TChainItem::UpdateLightBulbs(bool work)
         else if (_Item->_Type == TItem::ETypeItem::LAMP) {
             _Item->SetActive(work);
         }
-
-        if (_Next) {
-            work = _Next->UpdateLightBulbs(work);
-        }
     }
     else {
         bool childWork = false;
@@ -247,22 +197,29 @@ bool TChainItem::UpdateLightBulbs(bool work)
             childWork = childWork || ans;
         }
         work = childWork;
-        if (_Next) {
-            _Next->UpdateLightBulbs(work);
-        }
+    }
+
+    if (_Next) {
+        work = _Next->UpdateLightBulbs(work);
     }
     return work;
 }
 
-void TChainItem::UpdateLightBulbsSlot()
+void TChainItem::FullUpdateLightBulbsSlot()
 {
-    qDebug() << "UPDATE!";
     _StartChain->UpdateLightBulbs();
 }
 
-TChainItem::TChainItem(QObject *parent)
+TChainItem::TChainItem(QString chainStr, int ind, TChainItem* start, TChainItem* prev, QObject *parent)
     : QObject{parent}
     , _Next(nullptr)
 {
+    MakeChainFromStr(chainStr, ind, start, prev);
+}
 
+TChainItem::TChainItem(QString chainStr, QObject *parent)
+    : QObject{parent}
+    , _Next(nullptr)
+{
+    MakeChainFromStr(chainStr, 0, this, nullptr);
 }

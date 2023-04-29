@@ -24,14 +24,12 @@ public:
     ETypeItem _Type;
     bool _IsActive;
     virtual void SetActive(bool active) = 0;
+    QString _Label;
 
 signals:
     void UpdateKey();
 
 protected:
-
-    QString _Label;
-
     QBrush _Brush;
 
 //private:

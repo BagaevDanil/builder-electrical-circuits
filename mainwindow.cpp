@@ -12,12 +12,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     QString str1 = "K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14";
     QString str2 = "K12-K3-(L1,L4,(K2-L11,L9),(K7-K8,L1,L4,(K2-L11,L9)))-(L11,L7)-L14";
-    QString str = "K12-K2-(K33-L12345-K1,K1-L4-K1,(K123456-L123456,K4-L123456)-L123-L1,(K3333-K8,(K12-K3-(L1,L4,(K2-L11,L9-K7),(K7-K8))-(L11,L7)-L14),K8-L4,(K2-L11,L9-K9)))-(L1111,L7)-L14";
+    QString str = "K12-K2-(K33-L12345-K1,K1-L4-K1,(K123456-L123456,K4-L123456)-L123-L1-K12,(K3333-K8,(K12-K3-(L1,L4,(K2-L11,L9-K7),(K7-K8))-(L11,L7)-L14),K8-L4,(K2-L11,L9-K9)))-(L1111,L7)-L14";
     QString str4 = "K12-K3-(K1-L1-K1,K1-L4-K1,(K123456-L11,L123456),(K12-K3-(L1,L4,(K2-L11,L9-K9),(K7-K8))-K89-(L11,L7)-L14-K8))-K89-(L11,L7)-L14";
-    chain = new TChainItem();
-    chain->MakeChainFromStr(str, 0, nullptr, chain);
+
+    chain = new TChainItem(str);
     qDebug() << chain->ToString();
-    // qDebug() << chain->GetW();
 
     //TChainItem* tail = chain->GetTail();
     //qDebug() << tail->ToStringReverse();
