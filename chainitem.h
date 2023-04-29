@@ -22,13 +22,14 @@ public:
     TChainItem* GetTail();
     int GetW(int l = 0);
     int GetLen();
-    void AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up);
-    void UpdateLightBulbs(bool work = true);
+    void AddToScene(QGraphicsScene* scene, int curW, int curH);
+    bool UpdateLightBulbs(bool work = true);
 
 public: // private
     QVector<TChainItem*> _Child;
     TChainItem* _Prev;
     TChainItem* _Next;
+    TChainItem* _Head;
     int _W;
     int _H;
     TItem* _Item;

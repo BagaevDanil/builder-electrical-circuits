@@ -36,5 +36,5 @@ void TLamp::SetActive(bool active)
     else {
         _Brush = DISABLED1;
     }
-    setPos(pos().x() + 0.0009, pos().y());
+    setPos(pos().x() + 0.0001, pos().y());
 }

@@ -2,38 +2,38 @@
 
 int INDENT = 30;
 
-void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
+void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
 
 
     if (!_IsChain) {
-        _Item->setPos(left, up);
+        _Item->setPos(curW, curH);
         scene->addItem(_Item);
         if (_Next) {
-            scene->addLine(left, up, left + INDENT, up);
-            _Next->AddToScene(scene, 0 + INDENT*_Next->_W, right, bottom, up);
+            scene->addLine(curW, curH, curW + INDENT, curH);
+            _Next->AddToScene(scene, curW + INDENT, curH);
         }
     }
     else {
-        int h = 0;
-        int qq = 0;
 
+        int maxChildLen = 0;
         for (int i = 0; i < _Child.size(); i++) {
-            qq = std::max(qq, _Child[i]->GetLen());
+            maxChildLen = std::max(maxChildLen, _Child[i]->GetLen());
         }
 
+        int childHeight = 0;
         for (int i = 0; i < _Child.size(); i++) {
-            scene->addLine(left, up, left, up - INDENT*h);
-            scene->addLine(left, up - INDENT*h, left + INDENT, up - INDENT*h);
-            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(qq+1), up - INDENT*h);
-            scene->addLine(left + INDENT*(qq+1), up, left + INDENT*(qq+1), up - INDENT*h);
+            scene->addLine(curW, curH, curW, curH - INDENT*childHeight);
+            scene->addLine(curW, curH - INDENT*childHeight, curW + INDENT, curH - INDENT*childHeight);
+            scene->addLine(curW + INDENT, curH - INDENT*childHeight, curW + INDENT*(maxChildLen+1), curH - INDENT*childHeight);
+            scene->addLine(curW + INDENT*(maxChildLen + 1), curH, curW + INDENT*(maxChildLen+1), curH - INDENT*childHeight);
 
-            _Child[i]->AddToScene(scene, 0 + INDENT*_Child[i]->_W, right, bottom, up - INDENT*(h));
-            h += _Child[i]->_H;
+            _Child[i]->AddToScene(scene, curW + INDENT, curH - INDENT * childHeight);
+            childHeight += _Child[i]->_H;
         }
 
         if (_Next) {
-            scene->addLine(INDENT*(_Next->_W - 1), up, INDENT*_Next->_W, up);
-            _Next->AddToScene(scene, 0 + INDENT*_Next->_W, right, bottom, up);
+            scene->addLine(INDENT*(_Next->_W - 1), curH, INDENT*_Next->_W, curH);
+            _Next->AddToScene(scene, curW + (maxChildLen + 2)*INDENT, curH);
         }
     }
 }
@@ -136,11 +136,8 @@ int TChainItem::GetW(int l)
         for (int i = 0; i < _Child.size(); i++) {
            _Child[i]->GetW(_W);
            mx = std::max(mx, _Child[i]->GetLen());
-           if (_Child[0]->_Num == "L12345") {
-               qDebug() << _Child[i]->_W;
-           }
         }
-        // _W = mx;
+
         if (_Next) {
             _Next->GetW(_W + mx + 1);
         }
@@ -230,33 +227,34 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
     }
 }
 
-void TChainItem::UpdateLightBulbs(bool work)
+bool TChainItem::UpdateLightBulbs(bool work)
 {
 
     if (!_IsChain) {
-        if (_Item->_Type == TItem::ETypeItem::KEY) {
-            if (!_Item->_IsActive) {
-                work = false;
-            }
+        if (_Item->_Type == TItem::ETypeItem::KEY && !_Item->_IsActive) {
+            work = false;
         }
         else if (_Item->_Type == TItem::ETypeItem::LAMP) {
             _Item->SetActive(work);
         }
 
         if (_Next) {
-            _Next->UpdateLightBulbs(work);
+            work = _Next->UpdateLightBulbs(work);
         }
     }
     else {
+        bool childWork = false;
         for (int i = 0; i < _Child.size(); i++) {
-            _Child[i]->UpdateLightBulbs(work);
+            bool ans = _Child[i]->UpdateLightBulbs(work);
+            if (_Child[0]->_Num == "K3333") qDebug() << ans;
+            childWork = childWork || ans;
         }
-
+        work = childWork;
         if (_Next) {
             _Next->UpdateLightBulbs(work);
         }
     }
-
+    return work;
 }
 
 void TChainItem::UpdateLightBulbsSlot()
