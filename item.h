@@ -21,13 +21,18 @@ public:
 
 public:
     TItem(QString label, QObject *parent = nullptr);
+    ETypeItem _Type;
+    bool _IsActive;
+    virtual void SetActive(bool active) = 0;
 
-//protected:
-    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
+signals:
+    void UpdateKey();
 
 protected:
-    ETypeItem _Type;
+
     QString _Label;
+
+    QBrush _Brush;
 
 //private:
     //virtual QRectF boundingRect() const;

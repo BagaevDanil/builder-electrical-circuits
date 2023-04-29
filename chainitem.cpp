@@ -1,75 +1,10 @@
 #include "chainitem.h"
 
-TChainItem::TChainItem(int num)
-{
-
-}
-
-//void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
-//    int INDENT = 30;
-//    int _W = GetW();
-//    if (!_IsChain) {
-//        scene->addLine(left - INDENT/2, up, left + INDENT*_W - INDENT/2, up);
-//        _Item->setPos(left, up);
-//        // qDebug() << _Num << left << up;
-//        scene->addItem(_Item);
-//        if (_Next) {
-//            _Next->AddToScene(scene, left + INDENT, right, bottom, up);
-//        }
-//    }
-//    else {
-//        int h = 0;
-//        scene->addLine(left - INDENT/2, up, left + INDENT/2, up);
-//        for (int i = 0; i < _Child.size(); i++) {
-//            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(_W-2), up - INDENT*h);
-//            _Child[i]->AddToScene(scene, left + INDENT, right, bottom, up - INDENT*(h));
-//            if (i != _Child.size() - 1) {
-//                h += _Child[i]->_H;
-//            }
-//        }
-//        scene->addLine(left + INDENT/2, up - INDENT*h, left + INDENT/2, up);
-//        scene->addLine(left + INDENT*(_W-2), up - INDENT*h, left + INDENT*(_W-2), up);
-//        // scene->addLine(left + INDENT*(_W), up, left + INDENT*(_W), up);
-//        if (_Next) {
-//            _Next->AddToScene(scene, left + INDENT*(_W-2), right, bottom, up);
-//        }
-//    }
-//}
-
-//void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
-//    int INDENT = 30;
-//    int _W = GetW();
-//    if (!_IsChain) {
-//        scene->addLine(left - INDENT/2, up, left + INDENT*_W - INDENT/2, up);
-//        _Item->setPos(left, up);
-//        // qDebug() << _Num << left << up;
-//        scene->addItem(_Item);
-//        if (_Next) {
-//            _Next->AddToScene(scene, left + INDENT, right, bottom, up);
-//        }
-//    }
-//    else {
-//        int h = 0;
-//        scene->addLine(left - INDENT/2, up, left + INDENT, up);
-//        for (int i = 0; i < _Child.size(); i++) {
-//            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(_W) - INDENT/2, up - INDENT*h);
-//            _Child[i]->AddToScene(scene, left + INDENT, right, bottom, up - INDENT*(h));
-//            if (i != _Child.size() - 1) {
-//                h += _Child[i]->_H;
-//            }
-//        }
-//        scene->addLine(left + INDENT/2, up - INDENT*h, left + INDENT/2, up);
-//        scene->addLine(left + INDENT*(_W)-INDENT/2, up - INDENT*h, left + INDENT*(_W)-INDENT/2, up);
-//        // scene->addLine(left + INDENT*(_W), up, left + INDENT*(_W), up);
-//        if (_Next) {
-//            _Next->AddToScene(scene, left + INDENT*(_W), right, bottom, up);
-//        }
-//    }
-//}
+int INDENT = 30;
 
 void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bottom, int up) {
-    int INDENT = 30;
-    // int _W = GetW();
+
+
     if (!_IsChain) {
         _Item->setPos(left, up);
         scene->addItem(_Item);
@@ -89,7 +24,7 @@ void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bott
         for (int i = 0; i < _Child.size(); i++) {
             scene->addLine(left, up, left, up - INDENT*h);
             scene->addLine(left, up - INDENT*h, left + INDENT, up - INDENT*h);
-            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(qq+1), up - INDENT*h); //INDENT*(_Next->_W-1)
+            scene->addLine(left + INDENT, up - INDENT*h, left + INDENT*(qq+1), up - INDENT*h);
             scene->addLine(left + INDENT*(qq+1), up, left + INDENT*(qq+1), up - INDENT*h);
 
             _Child[i]->AddToScene(scene, 0 + INDENT*_Child[i]->_W, right, bottom, up - INDENT*(h));
@@ -102,33 +37,6 @@ void TChainItem::AddToScene(QGraphicsScene* scene, int left, int right, int bott
         }
     }
 }
-
-
-void TChainItem::AddToSceneR(QGraphicsScene* scene, int left, int right, int bottom, int up) {
-    int INDENT = 30;
-    // int _W = GetW();
-    if (!_IsChain) {
-        if (_Prev) {
-            scene->addLine(right - INDENT, up, right, up);
-            qDebug() << _WR;
-            _Prev->AddToSceneR(scene, right - INDENT*_Prev->_WR, right, bottom, up);
-        }
-    }
-    else {
-        int h = 0;
-
-        for (int i = _Child.size() - 1; i >= 0; i--) {
-            scene->addLine(left, up, left - INDENT, up - INDENT*h);
-            _Child[i]->AddToSceneR(scene, right - INDENT*_Child[i]->_WR, right, bottom, up - INDENT*(h));
-            h += _Child[i]->_H;
-        }
-
-        if (_Prev) {
-            _Prev->AddToSceneR(scene, right - INDENT*_Prev->_WR, right, bottom, up);
-        }
-    }
-}
-
 
 QString TChainItem::ToString()
 {
@@ -213,28 +121,6 @@ int TChainItem::GetLen() {
     return ans;
 }
 
-int TChainItem::GetLenR() {
-    int ans = 0;
-    if (!_IsChain) {
-        ans += 1;
-        if (_Prev) {
-            ans += _Prev->GetLenR();
-        }
-    }
-    else {
-        ans += 1;
-        int mx = 0;
-        for (int i = 0; i < _Child.size(); i++) {
-           mx = std::max(mx, _Child[i]->GetLenR());
-        }
-        ans += mx;
-        if (_Prev) {
-            ans += _Prev->GetLenR();
-        }
-    }
-    return ans;
-}
-
 
 int TChainItem::GetW(int l)
 {
@@ -262,32 +148,6 @@ int TChainItem::GetW(int l)
     return _W;
 }
 
-int TChainItem::GetWR(int l)
-{
-    if (!_IsChain) {
-        _WR = l + 1;
-        if (_Prev) {
-            _Prev->GetWR(_WR);
-        }
-    }
-    else {
-        _WR = l + 1;
-        int mx = 0;
-        for (int i = 0; i < _Child.size(); i++) {
-           _Child[i]->GetWR(_WR);
-           mx = std::max(mx, _Child[i]->GetLenR());
-           if (_Child[0]->_Num == "L12345") {
-               qDebug() << _Child[i]->_WR;
-           }
-        }
-        // _W = mx;
-        if (_Prev) {
-            _Prev->GetWR(_WR + mx + 1);
-        }
-    }
-    return _WR;
-}
-
 void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent) // K12-K3-(L1,L4,(K2-L11,L9),(K7-K8))-(L11,L7)-L14
 {
     _Prev = parent;
@@ -305,6 +165,7 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
 
         if (label[0] == 'K') {
             _Item = new TKey(label);
+            connect(_Item,SIGNAL(UpdateKey()),this,SLOT(UpdateLightBulbsSlot()));
         }
         else if (label[0] == 'L') {
             _Item = new TLamp(label);
@@ -369,7 +230,44 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind, TChainItem* parent)
     }
 }
 
+void TChainItem::UpdateLightBulbs(bool work)
+{
 
+    if (!_IsChain) {
+        if (_Item->_Type == TItem::ETypeItem::KEY) {
+            if (!_Item->_IsActive) {
+                work = false;
+            }
+        }
+        else if (_Item->_Type == TItem::ETypeItem::LAMP) {
+            _Item->SetActive(work);
+        }
 
-TChainItem::TChainItem()
-    : _Next(nullptr) {}
+        if (_Next) {
+            _Next->UpdateLightBulbs(work);
+        }
+    }
+    else {
+        for (int i = 0; i < _Child.size(); i++) {
+            _Child[i]->UpdateLightBulbs(work);
+        }
+
+        if (_Next) {
+            _Next->UpdateLightBulbs(work);
+        }
+    }
+
+}
+
+void TChainItem::UpdateLightBulbsSlot()
+{
+    qDebug() << "UPDATE!";
+    UpdateLightBulbs();
+}
+
+TChainItem::TChainItem(QObject *parent)
+    : QObject{parent}
+    , _Next(nullptr)
+{
+
+}
