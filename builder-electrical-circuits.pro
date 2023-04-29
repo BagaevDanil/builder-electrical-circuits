@@ -14,14 +14,16 @@ SOURCES += \
     key.cpp \
     lamp.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    mathsign.cpp
 
 HEADERS += \
     chainitem.h \
     item.h \
     key.h \
     lamp.h \
-    mainwindow.h
+    mainwindow.h \
+    mathsign.h
 
 FORMS += \
     mainwindow.ui

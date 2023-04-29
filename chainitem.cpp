@@ -205,9 +205,56 @@ bool TChainItem::UpdateLightBulbs(bool work)
     return work;
 }
 
+bool TChainItem::UpdateLightBulbsReverse(bool work)
+{
+    if (!_IsChain) {
+        //qDebug() << _Item->_Label;
+        if (_Item->_Type == TItem::ETypeItem::KEY && !_Item->_IsActive) {
+            work = false;
+        }
+        else if (_Item->_Type == TItem::ETypeItem::LAMP) {
+            _Item->SetActive(work);
+        }
+    }
+    else {
+        bool childWork = false;
+        for (int i = 0; i < _Child.size(); i++) {
+            bool ans = _Child[i]->GetTail()->UpdateLightBulbsReverse(work);
+            childWork = childWork || ans;
+        }
+        work = childWork;
+    }
+
+    if (_Prev) {
+        work = _Prev->UpdateLightBulbsReverse(work);
+    }
+    return work;
+}
+
 void TChainItem::FullUpdateLightBulbsSlot()
 {
-    _StartChain->UpdateLightBulbs();
+    if (_StartChain->IsReverese) {
+        _StartChain->GetTail()->UpdateLightBulbsReverse();
+    }
+    else {
+        _StartChain->UpdateLightBulbs();
+    }
+
+}
+
+void TChainItem::SetReverse(bool reverse)
+{
+    IsReverese = reverse;
+    if (IsReverese) {
+        _MathSingLeft.TypeSign = TMathSign::ETypeSign::MINUS;
+        _MathSingRight.TypeSign = TMathSign::ETypeSign::PLUS;
+    }
+    else {
+        _MathSingLeft.TypeSign = TMathSign::ETypeSign::PLUS;
+        _MathSingRight.TypeSign = TMathSign::ETypeSign::MINUS;
+    }
+    FullUpdateLightBulbsSlot();
+
 }
 
 TChainItem::TChainItem(QString chainStr, int ind, TChainItem* start, TChainItem* prev, QObject *parent)
@@ -217,9 +264,16 @@ TChainItem::TChainItem(QString chainStr, int ind, TChainItem* start, TChainItem*
     MakeChainFromStr(chainStr, ind, start, prev);
 }
 
-TChainItem::TChainItem(QString chainStr, QObject *parent)
+TChainItem::TChainItem(QGraphicsScene* scene, QString chainStr, QObject *parent)
     : QObject{parent}
     , _Next(nullptr)
 {
+    IsReverese = false;
     MakeChainFromStr(chainStr, 0, this, nullptr);
+    _MathSingLeft.TypeSign = TMathSign::ETypeSign::PLUS;
+    _MathSingLeft.setPos(50, 50);
+    _MathSingRight.TypeSign = TMathSign::ETypeSign::MINUS;
+    _MathSingRight.setPos(100, 50);
+    scene->addItem(&_MathSingLeft);
+    scene->addItem(&_MathSingRight);
 }
