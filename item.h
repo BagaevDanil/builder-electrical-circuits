@@ -25,7 +25,8 @@ public:
     void SetType(ETypeItem type);
     ETypeItem GetType() const;
     bool GetActive() const;
-    QString GetLable() const;
+    const QString& GetLable() const;
+    const QRectF& GetRect() const;
 
 signals:
     void UpdateKey();

@@ -1,13 +1,13 @@
 #include "chainitem.h"
 
-const int TChainItem::INDENT = 25;
+const int TChainItem::INDENT = 30;
 
 void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
     if (!_IsChain) {
         _Item->setPos(curW, curH);
         scene->addItem(_Item);
         if (_Next) {
-            scene->addLine(curW, curH, curW + INDENT, curH);
+            scene->addLine(curW + _Item->GetRect().width()/2, curH, curW + INDENT, curH);
             _Next->AddToScene(scene, curW + INDENT, curH);
         }
     }
@@ -298,8 +298,8 @@ TChainItem::TChainItem(QString chainStr, QGraphicsScene* scene, int curW, int cu
     MakeChainFromStr(chainStr, 0, this, nullptr);
 
     _MathSingLeft.setPos(curW, curH + _H*INDENT);
-    AddToScene(scene, curW + 40, curH + _H*INDENT);
-    _MathSingRight.setPos(_MathSingLeft.GetSize() + (GetLen() + 2) * INDENT, curH + _H*INDENT);
+    AddToScene(scene, curW + (_MathSingLeft.GetSize() + INDENT), curH + _H*INDENT);
+    _MathSingRight.setPos(_MathSingLeft.GetSize() + (GetLen() + 2) * INDENT + _MathSingRight.GetSize()/2, curH + _H*INDENT);
     SetReverse(reverse);
 
     scene->addItem(&_MathSingLeft);

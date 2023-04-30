@@ -23,7 +23,12 @@ bool TItem::GetActive() const
     return _IsActive;
 }
 
-QString TItem::GetLable() const
+const QString& TItem::GetLable() const
 {
     return _Label;
+}
+
+const QRectF& TItem::GetRect() const
+{
+    return _Rect;
 }
