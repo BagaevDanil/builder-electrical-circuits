@@ -18,10 +18,6 @@ void TLamp::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     painter->drawEllipse(_Rect);
 }
 
-//void TLamp::mousePressEvent(QGraphicsSceneMouseEvent* /*event*/)
-//{
-//}
-
 void TLamp::SetActive(bool active)
 {
     _IsActive = active;

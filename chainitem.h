@@ -16,26 +16,28 @@ class TChainItem : public QObject
     Q_OBJECT
 
 public:
+    static const int INDENT;
+
+public:
     TChainItem(QString chainStr, QGraphicsScene* scene, int curW, int curH, bool reverse = false, QObject *parent = nullptr);
-    QString ToStringCommon();
-    QString ToString();
-    QString ToStringReverse();
+    QString ToStringCommon() const;
+    QString ToString() const;
+    QString ToStringReverse() const;
     void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* start = nullptr, TChainItem* prev = nullptr);
     TChainItem* GetTail();
-    int GetLen();
     void AddToScene(QGraphicsScene* scene, int curW, int curH);
     bool UpdateLightBulbs(bool work = true);
     bool UpdateLightBulbsReverse(bool work = true);
 
 private:
     TChainItem(QString chainStr, int ind, TChainItem* start = nullptr, TChainItem* prev = nullptr, QObject *parent = nullptr);
+    int GetLen() const;
 
 private:
     QVector<TChainItem*> _Child;
     TChainItem* _Prev;
     TChainItem* _Next;
     TChainItem* _StartChain;
-    int _W;
     int _H;
     TItem* _Item;
     bool _IsChain;
@@ -46,8 +48,8 @@ private:
 public:
     void ChangeReverese();
     void SetReverse(bool reverse);
-    int GetSizeW();
-    int GetSizeH();
+    int GetSizeW() const;
+    int GetSizeH() const;
 
 signals:
     void UpdateScene();

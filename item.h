@@ -23,9 +23,9 @@ public:
     TItem(QString label, ETypeItem type, bool active, QRectF rect, QBrush brush, QObject *parent = nullptr);
     virtual void SetActive(bool active) = 0;
     void SetType(ETypeItem type);
-    ETypeItem GetType();
-    bool GetActive();
-    QString GetLable();
+    ETypeItem GetType() const;
+    bool GetActive() const;
+    QString GetLable() const;
 
 signals:
     void UpdateKey();

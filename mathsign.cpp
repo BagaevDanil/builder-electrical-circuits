@@ -10,7 +10,8 @@ QRectF TMathSign::boundingRect() const
     return _Rect;
 }
 
-int TMathSign::GetSize() {
+int TMathSign::GetSize() const
+{
     return SIZE;
 }
 

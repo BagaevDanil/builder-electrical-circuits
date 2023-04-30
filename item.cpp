@@ -13,17 +13,17 @@ void TItem::SetType(ETypeItem type)
     _Type = type;
 }
 
-TItem::ETypeItem TItem::GetType()
+TItem::ETypeItem TItem::GetType() const
 {
     return _Type;
 }
 
-bool TItem::GetActive()
+bool TItem::GetActive() const
 {
     return _IsActive;
 }
 
-QString TItem::GetLable()
+QString TItem::GetLable() const
 {
     return _Label;
 }

@@ -1,6 +1,6 @@
 #include "chainitem.h"
 
-int INDENT = 25;
+const int TChainItem::INDENT = 25;
 
 void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
     if (!_IsChain) {
@@ -36,7 +36,7 @@ void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
     }
 }
 
-QString TChainItem::ToStringCommon()
+QString TChainItem::ToStringCommon() const
 {
     QString ans = "";
     if (!_IsChain) {
@@ -61,7 +61,7 @@ QString TChainItem::ToStringCommon()
     return ans;
 }
 
-QString TChainItem::ToStringReverse()
+QString TChainItem::ToStringReverse() const
 {
     QString ans = "";
     if (!_IsChain) {
@@ -87,7 +87,7 @@ QString TChainItem::ToStringReverse()
     return ans;
 }
 
-QString TChainItem::ToString()
+QString TChainItem::ToString() const
 {
     if (_IsReverese) {
         return ToStringReverse();
@@ -105,7 +105,8 @@ TChainItem* TChainItem::GetTail()
 }
 
 
-int TChainItem::GetLen() {
+int TChainItem::GetLen() const
+{
     int ans;
     if (!_IsChain) {
         ans = 1;
@@ -279,11 +280,13 @@ void TChainItem::ChangeReverese()
     SetReverse(!_IsReverese);
 }
 
-int TChainItem::GetSizeH() {
+int TChainItem::GetSizeH() const
+{
     return (_H + 1) * INDENT;
 }
 
-int TChainItem::GetSizeW() {
+int TChainItem::GetSizeW() const
+{
     return _MathSingLeft.GetSize() + (GetLen() + 2) * INDENT + _MathSingRight.GetSize();
 }
 

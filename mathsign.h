@@ -15,7 +15,7 @@ public:
     static const int SIZE;
 
 public:
-    int GetSize();
+    int GetSize() const;
 
 public:
     TMathSign();
