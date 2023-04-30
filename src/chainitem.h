@@ -8,6 +8,7 @@
 #include "lamp.h"
 #include "key.h"
 #include <QGraphicsScene>
+#include <QGraphicsItem>
 #include <QObject>
 #include "mathsign.h"
 

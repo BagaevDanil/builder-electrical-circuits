@@ -90,7 +90,11 @@ QString TChainItem::ToStringReverse() const
 QString TChainItem::ToString() const
 {
     if (_IsReverese) {
-        return ToStringReverse();
+        const TChainItem* tail = this;
+        while (tail->_Next) {
+            tail = tail->_Next;
+        }
+        return tail->ToStringReverse();
     }
     return ToStringCommon();
 }
@@ -130,6 +134,9 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind,  TChainItem* start,
 {
     _StartChain = start;
     _Prev = prev;
+    if (chainStr == "") {
+        throw std::logic_error("Unexpected symbol");
+    }
 
     if (chainStr[ind] == 'K' || chainStr[ind] == 'L') {
         _IsChain = false;
@@ -159,6 +166,10 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind,  TChainItem* start,
         int balance = 1;
         QString chain;
         while (balance != 0) {
+            if (ind >=  chainStr.size()) {
+                throw std::logic_error("Unexpected symbol");
+            }
+
             if (chainStr[ind] == '(') {
                 balance++;
             }
@@ -309,6 +320,9 @@ TChainItem::TChainItem(QString chainStr, QGraphicsScene* scene, int curW, int cu
 {
     _IsReverese = reverse;
     MakeChainFromStr(chainStr, 0, this, nullptr);
+    if (!scene) {
+        return;
+    }
 
     _MathSingLeft.setPos(curW, curH + _H*INDENT);
     AddToScene(scene, curW + (_MathSingLeft.GetSize() + INDENT), curH + _H*INDENT);
