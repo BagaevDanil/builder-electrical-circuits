@@ -182,7 +182,7 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind,  TChainItem* start,
         }
     }
     else {
-        // Error!
+        throw std::logic_error("Unexpected symbol");
     }
 
     ind++;

@@ -49,12 +49,20 @@ void MainWindow::on_pushButtonOpenFile_clicked()
         return;
     }
 
-    delete chain;
+    if (chain) {
+        delete chain;
+        chain = nullptr;
+    }
     std::string str;
     input >> str;
 
     _Scene->clear();
-    chain = new TChainItem(QString::fromStdString(str), _Scene, INDENT_LEFT, INDENT_UP);
+    try {
+     chain = new TChainItem(QString::fromStdString(str), _Scene, INDENT_LEFT, INDENT_UP);
+    } catch (std::exception) {
+        QMessageBox::warning(this, "Ошибка", "Некорректные данные");
+        return;
+    }
     _Scene->setSceneRect(0, 0, INDENT_LEFT + chain->GetSizeW(), INDENT_UP + chain->GetSizeH());
 }
 
