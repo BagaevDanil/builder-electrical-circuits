@@ -28,6 +28,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
+    if (!_Chain) {
+        return;
+    }
     _Chain->ChangeReverese();
 }
 
@@ -66,5 +69,14 @@ void MainWindow::on_pushButtonOpenFile_clicked()
     std::string str;
     input >> str;
     SetChain(QString::fromStdString(str));
+}
+
+
+void MainWindow::on_pushButtonResetKeys_clicked()
+{
+    if (!_Chain) {
+        return;
+    }
+    _Chain->ResetKey();
 }
 

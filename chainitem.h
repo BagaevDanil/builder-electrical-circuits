@@ -28,6 +28,7 @@ public:
     void AddToScene(QGraphicsScene* scene, int curW, int curH);
     bool UpdateLightBulbs(bool work = true);
     bool UpdateLightBulbsReverse(bool work = true);
+    void ResetKey();
 
 private:
     TChainItem(QString chainStr, int ind, TChainItem* start = nullptr, TChainItem* prev = nullptr, QObject *parent = nullptr);

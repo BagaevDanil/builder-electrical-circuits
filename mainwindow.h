@@ -29,6 +29,8 @@ private slots:
     void on_pushButton_clicked();
     void on_pushButtonOpenFile_clicked();
 
+    void on_pushButtonResetKeys_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

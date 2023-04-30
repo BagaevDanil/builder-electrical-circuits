@@ -239,6 +239,22 @@ bool TChainItem::UpdateLightBulbsReverse(bool work)
     return work;
 }
 
+void TChainItem::ResetKey()
+{
+    if (!_IsChain) {
+        _Item->SetActive(true);
+    }
+    else {
+        for (int i = 0; i < _Child.size(); i++) {
+            _Child[i]->ResetKey();
+        }
+    }
+
+    if (_Next) {
+        _Next->ResetKey();
+    }
+}
+
 void TChainItem::FullUpdateLightBulbsSlot()
 {
     if (_StartChain->_IsReverese) {
