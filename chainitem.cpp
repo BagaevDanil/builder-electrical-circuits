@@ -1,6 +1,6 @@
 #include "chainitem.h"
 
-int INDENT = 30;
+int INDENT = 25;
 
 void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
     if (!_IsChain) {
@@ -36,11 +36,11 @@ void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
     }
 }
 
-QString TChainItem::ToString()
+QString TChainItem::ToStringCommon()
 {
     QString ans = "";
     if (!_IsChain) {
-        ans += _Item->_Label;
+        ans += _Item->GetLable();
         if (_Next) {
             ans += "->" + _Next->ToString();
         }
@@ -65,7 +65,7 @@ QString TChainItem::ToStringReverse()
 {
     QString ans = "";
     if (!_IsChain) {
-        ans += _Item->_Label;
+        ans += _Item->GetLable();
         if (_Prev) {
             ans += "->" + _Prev->ToStringReverse();
         }
@@ -85,6 +85,14 @@ QString TChainItem::ToStringReverse()
         }
     }
     return ans;
+}
+
+QString TChainItem::ToString()
+{
+    if (_IsReverese) {
+        return ToStringReverse();
+    }
+    return ToStringCommon();
 }
 
 TChainItem* TChainItem::GetTail()
@@ -172,6 +180,9 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind,  TChainItem* start,
             ind++;
         }
     }
+    else {
+        // Error!
+    }
 
     ind++;
     if (ind < chainStr.size()) {
@@ -183,10 +194,10 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind,  TChainItem* start,
 bool TChainItem::UpdateLightBulbs(bool work)
 {
     if (!_IsChain) {
-        if (_Item->_Type == TItem::ETypeItem::KEY && !_Item->_IsActive) {
+        if (_Item->GetType() == TItem::ETypeItem::KEY && !_Item->GetActive()) {
             work = false;
         }
-        else if (_Item->_Type == TItem::ETypeItem::LAMP) {
+        else if (_Item->GetType() == TItem::ETypeItem::LAMP) {
             _Item->SetActive(work);
         }
     }
@@ -208,11 +219,10 @@ bool TChainItem::UpdateLightBulbs(bool work)
 bool TChainItem::UpdateLightBulbsReverse(bool work)
 {
     if (!_IsChain) {
-        //qDebug() << _Item->_Label;
-        if (_Item->_Type == TItem::ETypeItem::KEY && !_Item->_IsActive) {
+        if (_Item->GetType() == TItem::ETypeItem::KEY && !_Item->GetActive()) {
             work = false;
         }
-        else if (_Item->_Type == TItem::ETypeItem::LAMP) {
+        else if (_Item->GetType() == TItem::ETypeItem::LAMP) {
             _Item->SetActive(work);
         }
     }
@@ -233,7 +243,7 @@ bool TChainItem::UpdateLightBulbsReverse(bool work)
 
 void TChainItem::FullUpdateLightBulbsSlot()
 {
-    if (_StartChain->IsReverese) {
+    if (_StartChain->_IsReverese) {
         _StartChain->GetTail()->UpdateLightBulbsReverse();
     }
     else {
@@ -244,8 +254,8 @@ void TChainItem::FullUpdateLightBulbsSlot()
 
 void TChainItem::SetReverse(bool reverse)
 {
-    IsReverese = reverse;
-    if (IsReverese) {
+    _IsReverese = reverse;
+    if (_IsReverese) {
         _MathSingLeft.TypeSign = TMathSign::ETypeSign::MINUS;
         _MathSingRight.TypeSign = TMathSign::ETypeSign::PLUS;
     }
@@ -264,16 +274,31 @@ TChainItem::TChainItem(QString chainStr, int ind, TChainItem* start, TChainItem*
     MakeChainFromStr(chainStr, ind, start, prev);
 }
 
-TChainItem::TChainItem(QGraphicsScene* scene, QString chainStr, QObject *parent)
+void TChainItem::ChangeReverese()
+{
+    SetReverse(!_IsReverese);
+}
+
+int TChainItem::GetSizeH() {
+    return _H * INDENT;
+}
+
+int TChainItem::GetSizeW() {
+    return _MathSingLeft.GetSize() + (GetLen() + 2) * INDENT + _MathSingRight.GetSize();
+}
+
+TChainItem::TChainItem(QString chainStr, QGraphicsScene* scene, int curW, int curH, bool reverse, QObject *parent)
     : QObject{parent}
     , _Next(nullptr)
 {
-    IsReverese = false;
+    _IsReverese = reverse;
     MakeChainFromStr(chainStr, 0, this, nullptr);
-    _MathSingLeft.TypeSign = TMathSign::ETypeSign::PLUS;
-    _MathSingLeft.setPos(50, 50);
-    _MathSingRight.TypeSign = TMathSign::ETypeSign::MINUS;
-    _MathSingRight.setPos(100, 50);
+
+    _MathSingLeft.setPos(curW, curH + _H*INDENT);
+    AddToScene(scene, curW + 40, curH + _H*INDENT);
+    _MathSingRight.setPos(_MathSingLeft.GetSize() + (GetLen() + 2) * INDENT, curH + _H*INDENT);
+    SetReverse(reverse);
+
     scene->addItem(&_MathSingLeft);
     scene->addItem(&_MathSingRight);
 }

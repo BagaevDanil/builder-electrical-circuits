@@ -16,7 +16,8 @@ class TChainItem : public QObject
     Q_OBJECT
 
 public:
-    TChainItem(QGraphicsScene* scene, QString chainStr, QObject *parent = nullptr);
+    TChainItem(QString chainStr, QGraphicsScene* scene, int curW, int curH, bool reverse = false, QObject *parent = nullptr);
+    QString ToStringCommon();
     QString ToString();
     QString ToStringReverse();
     void MakeChainFromStr(QString chainStr, int ind = 0, TChainItem* start = nullptr, TChainItem* prev = nullptr);
@@ -29,11 +30,10 @@ public:
 private:
     TChainItem(QString chainStr, int ind, TChainItem* start = nullptr, TChainItem* prev = nullptr, QObject *parent = nullptr);
 
-public: // private
+private:
     QVector<TChainItem*> _Child;
     TChainItem* _Prev;
     TChainItem* _Next;
-    TChainItem* _Head;
     TChainItem* _StartChain;
     int _W;
     int _H;
@@ -41,8 +41,13 @@ public: // private
     bool _IsChain;
     TMathSign _MathSingLeft;
     TMathSign _MathSingRight;
-    bool IsReverese;
+    bool _IsReverese;
+
+public:
+    void ChangeReverese();
     void SetReverse(bool reverse);
+    int GetSizeW();
+    int GetSizeH();
 
 signals:
     void UpdateScene();
