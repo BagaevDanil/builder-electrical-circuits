@@ -19,14 +19,14 @@ public:
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void SetChain(QString str);
 
 private:
-    TChainItem* chain;
+    TChainItem* _Chain;
     QGraphicsScene* _Scene;
 
 private slots:
     void on_pushButton_clicked();
-
     void on_pushButtonOpenFile_clicked();
 
 private:

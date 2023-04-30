@@ -1,6 +1,6 @@
 #include "key.h"
 
-const QRectF TKey::RECT(-10, -5, 20, 10);
+const QRectF TKey::RECT(-10, -10, 20, 20);
 const QBrush TKey::BRUSH_ACTIVE(QColor(0, 0, 0));
 const QBrush TKey::BRUSH_DISABLED(QColor(192, 192, 192));
 
@@ -14,8 +14,18 @@ QRectF TKey::boundingRect() const
 
 void TKey::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->setBrush(_Brush);
-    painter->drawEllipse(_Rect);
+    if (_IsActive) {
+        painter->setPen(QPen(Qt::white, 4));
+        painter->drawLine(RECT.x(), 0, RECT.x() + RECT.width(), 0);
+        painter->setPen(QPen(Qt::black, 4));
+        painter->drawLine(RECT.x(), 0, RECT.x() + RECT.width(), 0);
+    }
+    else {
+        painter->setPen(QPen(Qt::white, 4));
+        painter->drawLine(RECT.x(), 0, RECT.x() + RECT.width(), 0);
+        painter->setPen(QPen(Qt::black, 4));
+        painter->drawLine(RECT.x(), 0, RECT.x() + RECT.width(), -10);
+    }
 }
 
 void TKey::mousePressEvent(QGraphicsSceneMouseEvent* /*event*/)

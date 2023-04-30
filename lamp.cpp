@@ -1,6 +1,7 @@
 #include "lamp.h"
 
-const QRectF TLamp::RECT(-10, -10, 20, 20);
+const int TLamp::SIZE = 24;
+const QRectF TLamp::RECT(-SIZE/2, -SIZE/2, SIZE, SIZE);
 const QBrush TLamp::BRUSH_ACTIVE(QColor(218, 165, 32));
 const QBrush TLamp::BRUSH_DISABLED(QColor(192, 192, 192));
 

@@ -18,11 +18,13 @@ int TMathSign::GetSize() const
 void TMathSign::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setBrush(QBrush(QColor(0, 0, 0)));
+    painter->drawEllipse(_Rect);
+    painter->setPen(QPen(Qt::white, 4));
     if (TypeSign == ETypeSign::MINUS) {
-        painter->drawLine(-15, 0, 15, 0);
+        painter->drawLine(-10, 0, 10, 0);
     }
     else if (TypeSign == ETypeSign::PLUS) {
-        painter->drawLine(-15, 0, 15, 0);
-        painter->drawLine(0, -15, 0, 15);
+        painter->drawLine(-10, 0, 10, 0);
+        painter->drawLine(0, -10, 0, 10);
     }
 }

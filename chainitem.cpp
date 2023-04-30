@@ -150,9 +150,6 @@ void TChainItem::MakeChainFromStr(QString chainStr, int ind,  TChainItem* start,
         else if (label[0] == 'L') {
             _Item = new TLamp(label);
         }
-        else {
-            // Error!
-        }
     }
     else if (chainStr[ind] == '(') {
         ind++;

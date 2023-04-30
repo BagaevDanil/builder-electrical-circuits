@@ -9,6 +9,7 @@ public:
     static const QRectF RECT;
     static const QBrush BRUSH_ACTIVE;
     static const QBrush BRUSH_DISABLED;
+    static const int SIZE;
 
 public:
     TLamp(QString label, QObject *parent = nullptr);
