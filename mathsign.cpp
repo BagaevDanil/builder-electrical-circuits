@@ -1,15 +1,17 @@
 #include "mathsign.h"
 
-QRectF RECT(-15, -15, 30, 30);
+const int TMathSign::SIZE = 30;
+const QRectF TMathSign::RECT(-TMathSign::SIZE/2, -TMathSign::SIZE/2, TMathSign::SIZE, TMathSign::SIZE);
 
-TMathSign::TMathSign()
-{
-
-}
+TMathSign::TMathSign() : _Rect(RECT) {}
 
 QRectF TMathSign::boundingRect() const
 {
-    return RECT;
+    return _Rect;
+}
+
+int TMathSign::GetSize() {
+    return SIZE;
 }
 
 void TMathSign::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

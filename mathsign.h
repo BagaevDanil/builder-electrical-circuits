@@ -11,11 +11,21 @@
 class TMathSign : public QGraphicsItem
 {
 public:
+    static const QRectF RECT;
+    static const int SIZE;
+
+public:
+    int GetSize();
+
+public:
     TMathSign();
     enum ETypeSign {
         PLUS,
         MINUS,
     } TypeSign;
+
+private:
+    QRectF _Rect;
 
 private:
     QRectF boundingRect() const;

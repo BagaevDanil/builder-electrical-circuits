@@ -1,41 +1,37 @@
 #include "key.h"
 
-QRectF _Rect1(-10, -5, 20, 10);
-QBrush ACTIVE(QColor(0, 0, 0));
-QBrush DISABLED(QColor(192, 192, 192));
+const QRectF TKey::RECT(-10, -5, 20, 10);
+const QBrush TKey::BRUSH_ACTIVE(QColor(0, 0, 0));
+const QBrush TKey::BRUSH_DISABLED(QColor(192, 192, 192));
 
-TKey::TKey(QString label, QObject *parent) : TItem(label, parent)
-{
-    _Brush = ACTIVE;
-    _IsActive = true;
-    _Type = ETypeItem::KEY;
-}
+TKey::TKey(QString label, QObject *parent)
+    : TItem(label, ETypeItem::KEY, true, RECT, BRUSH_ACTIVE, parent) {}
 
 QRectF TKey::boundingRect() const
 {
-    return _Rect1;
+    return _Rect;
 }
 
 void TKey::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setBrush(_Brush);
-    painter->drawEllipse(_Rect1);
+    painter->drawEllipse(_Rect);
 }
 
 void TKey::mousePressEvent(QGraphicsSceneMouseEvent* /*event*/)
 {
-    _IsActive = !_IsActive;
-    if (_IsActive) {
-        _Brush = ACTIVE;
-    }
-    else {
-        _Brush = DISABLED;
-    }
+    SetActive(!_IsActive);
     emit UpdateKey();
     setPos(pos().x() + 0.00001, pos().y());
 }
 
 void TKey::SetActive(bool active)
 {
-
+    _IsActive = active;
+    if (_IsActive) {
+        _Brush = BRUSH_ACTIVE;
+    }
+    else {
+        _Brush = BRUSH_DISABLED;
+    }
 }

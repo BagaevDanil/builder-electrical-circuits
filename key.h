@@ -6,6 +6,11 @@
 class TKey : public TItem
 {
 public:
+    static const QRectF RECT;
+    static const QBrush BRUSH_ACTIVE;
+    static const QBrush BRUSH_DISABLED;
+
+public:
     TKey(QString label, QObject *parent = nullptr);
     void SetActive(bool active);
 
@@ -15,7 +20,6 @@ private:
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
 
 };
 

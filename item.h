@@ -20,21 +20,22 @@ public:
     };
 
 public:
-    TItem(QString label, QObject *parent = nullptr);
-    ETypeItem _Type;
-    bool _IsActive;
+    TItem(QString label, ETypeItem type, bool active, QRectF rect, QBrush brush, QObject *parent = nullptr);
     virtual void SetActive(bool active) = 0;
-    QString _Label;
+    void SetType(ETypeItem type);
+    ETypeItem GetType();
+    bool GetActive();
+    QString GetLable();
 
 signals:
     void UpdateKey();
 
 protected:
     QBrush _Brush;
-
-//private:
-    //virtual QRectF boundingRect() const;
-    //virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    ETypeItem _Type;
+    bool _IsActive;
+    QString _Label;
+    QRectF _Rect;
 };
 
 #endif // TITEM_H
