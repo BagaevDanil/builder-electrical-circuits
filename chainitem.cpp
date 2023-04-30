@@ -280,7 +280,7 @@ void TChainItem::ChangeReverese()
 }
 
 int TChainItem::GetSizeH() {
-    return _H * INDENT;
+    return (_H + 1) * INDENT;
 }
 
 int TChainItem::GetSizeW() {
