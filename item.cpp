@@ -18,6 +18,15 @@ TItem::ETypeItem TItem::GetType() const
     return _Type;
 }
 
+void TItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    int FONT_SIZE = 10;
+    painter->setFont(QFont("times", FONT_SIZE));
+    int labelSizeX = FONT_SIZE * 4/3 * 3/5 * _Label.length();
+    int labelSizeY = FONT_SIZE * 4/3;
+    painter->drawText(QPointF(0 - labelSizeX/2, 22), _Label);
+}
+
 bool TItem::GetActive() const
 {
     return _IsActive;

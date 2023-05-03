@@ -1,6 +1,6 @@
 #include "chainitem.h"
 
-const int TChainItem::INDENT = 30;
+const int TChainItem::INDENT = 35;
 
 void TChainItem::AddToScene(QGraphicsScene* scene, int curW, int curH) {
     if (!_IsChain) {

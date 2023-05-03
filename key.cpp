@@ -14,6 +14,7 @@ QRectF TKey::boundingRect() const
 
 void TKey::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    TItem::paint(painter, option, widget);
     painter->setBrush(_Brush);
     painter->drawEllipse(_Rect);
 }

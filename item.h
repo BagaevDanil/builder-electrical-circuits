@@ -32,6 +32,9 @@ signals:
     void UpdateKey();
 
 protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+protected:
     QBrush _Brush;
     ETypeItem _Type;
     bool _IsActive;
